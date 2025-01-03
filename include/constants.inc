@@ -1,0 +1,6 @@
+    .include "constants/gba.inc"
+    .include "constants/io.inc"
+    .include "constants/register.inc"
+    .include "constants/key.inc"
+    .include "constants/music.inc"
+    .include "constants/entity.inc"
