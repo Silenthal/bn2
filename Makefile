@@ -63,7 +63,7 @@ LD				:= $(CC)
 
 check: $(BUILD)
 	@$(SHA512SUM) $(BASEDIR)/$(BASE).gba | sed -e 's/$(BASEDIR)\/$(BASE)/$(BUILD)\/$(TARGET)/' >| $(BUILD)/$(TARGET).checksum
-	@$(SHA512SUM) -c $(BUILD)/$(TARGET).checksum || $(QUICK_COMP) $(BASEDIR)/$(BASE).gba $(TARGET).gba
+	@$(SHA512SUM) -c $(BUILD)/$(TARGET).checksum || $(QUICK_COMP) $(BASEDIR)/$(BASE).gba $(BUILD)/$(TARGET).gba
 	@$(PROGRESS) $(DEPSDIR)/$(TARGET).map
 
 no-check: $(BUILD)
