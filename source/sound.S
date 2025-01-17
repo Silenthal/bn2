@@ -2,7 +2,7 @@
     .include "constants.inc"
     .include "macros.inc"
 
-    .set FUN_0801bf40, 0x801BF40+1
+    .set Flag_Get, 0x801BF40+1
     .set m4aSoundVSync, 0x80E6AE0+1
     .set FUN_080e711c, 0x80E711C+1
     .set m4aSoundInit, 0x80E713C+1
@@ -174,7 +174,7 @@ _ts Sound_AreaSongChange
     bpl        LAB_080006b4
     mov        r0,#0x0
     mov        r1,#0x4
-    bl         FUN_0801bf40
+    bl         Flag_Get
     beq        LAB_0800069a
     ldrb       r0,[r7,#0x6]
     cmp        r0,#0x46
@@ -310,9 +310,9 @@ SongGroup_Online:
     .word SongGroup_Other2
     .word SongGroup_BombComp
     .word SongGroup_BombComp
-    .word SongGroup_DenNet
-    .word SongGroup_KotoNet
-    .word SongGroup_YumNet
+    .word SongGroup_DenArea
+    .word SongGroup_KotoArea
+    .word SongGroup_YumArea
     .word SongGroup_NetNet
     .word SongGroup_Undernet
 
@@ -694,7 +694,7 @@ SongGroup_Other2:
     .byte T_Internet_World
     .byte T_Internet_World
 
-SongGroup_DenNet:
+SongGroup_DenArea:
     .byte T_Internet_World
     .byte T_Internet_World
     .byte T_Internet_World
@@ -712,7 +712,7 @@ SongGroup_DenNet:
     .byte T_Internet_World
     .byte T_Internet_World
 
-SongGroup_KotoNet:
+SongGroup_KotoArea:
     .byte T_Internet_World
     .byte T_Internet_World
     .byte T_Internet_World
@@ -730,7 +730,7 @@ SongGroup_KotoNet:
     .byte T_Internet_World
     .byte T_Internet_World
 
-SongGroup_YumNet:
+SongGroup_YumArea:
     .byte T_Internet_World
     .byte T_Internet_World
     .byte T_Internet_World

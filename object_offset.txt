@@ -1,2 +1,5 @@
 0x800000
 utility                     0xAD4
+rng                         0x1478
+video                       0x14C0
+asset_pet                   0x7276D0

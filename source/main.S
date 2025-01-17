@@ -27,7 +27,7 @@
     .set SpriteTilesetDetail_Init, 0x8002624+1
     .set InitWorld_LoadGame, 0x8003C70+1
     .set InitWorld_NewGame, 0x8003CDC+1
-    .set FUN_08003e08, 0x8003E08+1
+    .set World_Main, 0x8003E08+1
     .set Fade_Apply, 0x8004964+1
     .set InitFadeSettings, 0x8004A4C+1
     .set Fade_IsFadeActive, 0x8004A54+1
@@ -38,34 +38,38 @@
     .set Oam_InitAffineData, 0x801CB0C+1
     .set Text_Init, 0x8020AC4+1
     .set FUN_08020c10, 0x8020C10+1
-    .set FUN_08023848, 0x8023848+1
+    .set Transition_Main, 0x8023848+1
     .set Scene_UnloadAndResetStepCounter, 0x802425C+1
     .set Scene_UnloadIfMarked, 0x802427C+1
-    .set FUN_080244a0, 0x80244A0+1
+    .set Demo_Main, 0x80244A0+1
     .set InitMainMenu_Opt1, 0x8024A34+1
-    .set FUN_08024a54, 0x8024A54+1
+    .set Splash_Main, 0x8024A54+1
     .set FUN_08026c88, 0x8026C88+1
     .set FUN_08026dfc, 0x8026DFC+1
-    .set FUN_0802cf48, 0x802CF48+1
-    .set FUN_08030dbc, 0x8030DBC+1
-    .set FUN_08030f18, 0x8030F18+1
+    .set ChipTrader_Main, 0x802CF48+1
+    .set GameOver_Main, 0x8030DBC+1
+    .set Credits_Main, 0x8030F18+1
     .set FUN_08033850, 0x8033850+1
     .set Sio_SetReady, 0x80E62C8+1
+    .set Battle_Main, 0x8005820+1
+    .set BBS_Main, 0x802F0E4+1
+    .set Menu_Main, 0x80253D0+1
+    .set Shop_Main, 0x802F830+1
 
 
+@@ Main game loop
 _ts AgbMain
     bl         Main_Init
-    mov        r7,r10
-    ldr        r0,[r7,#0x0]
+    LoadMain manager, r0, r7
     mov        r1,#0x14
     strb       r1,[r0,#0x0]
     bl         InitMainMenu_Opt1
-LAB_080002a4:
+mainLoop:
     bl         Main_SoftResetCheck
     bl         Main_WaitFrames
     bl         BgUpdate_CallPreLoopFunction
     bl         Video_ApplySettings
-    ldr        r0,PTR_Oam_TransferData_08000310
+    ldr        r0,=Oam_TransferData
     mov        lr,pc
     bx         r0
     bl         Dma_TransferListStartAll
@@ -81,7 +85,7 @@ LAB_080002a4:
     add        r1,#0x1
     strh       r1,[r0,#0x0]
     bl         IncrementGameTimer
-    ldr        r0,PTR_PTR_ARRAY_08000314
+    ldr        r0,=jumpTableMain
     mov        r7,r10
     ldr        r1,[r7,#0x0]
     ldrb       r1,[r1,#0x0]
@@ -90,54 +94,51 @@ LAB_080002a4:
     bx         r0
     bl         FUN_080063f2
     tst        r0,r0
-    beq        LAB_080002fe
+    beq        2f
     bl         Fade_Apply
-LAB_080002fe:
+2:
     bl         FUN_08026c88
     bl         FUN_08020c10
     bl         BgUpdate_CallPostLoopFunction
     bl         BgTask_Update
-    b          LAB_080002a4
+    b          mainLoop
 
-PTR_Oam_TransferData_08000310:
-    .word Oam_TransferData
+    .pool
 
-PTR_PTR_ARRAY_08000314:
-    .word PTR_ARRAY_08000318
-
-PTR_ARRAY_08000318:
+jumpTableMain:
     .word MainMenu_Main
-    .word FUN_08003e08
-    .word 0x8005821
-    .word FUN_08023848
-    .word FUN_080244a0
-    .word FUN_08024a54
-    .word 0x80253D1
-    .word 0x802F831
-    .word FUN_08030dbc
-    .word FUN_0802cf48
-    .word 0x802F0E5
-    .word FUN_08030f18
+    .word World_Main
+    .word Battle_Main
+    .word Transition_Main
+    .word Demo_Main
+    .word Splash_Main
+    .word Menu_Main
+    .word Shop_Main
+    .word GameOver_Main
+    .word ChipTrader_Main
+    .word BBS_Main
+    .word Credits_Main
     .word FUN_08033850
 
 
+@@ Waits for a specific amount of frames to pass.
 _ts Main_WaitFrames
     push       {lr}
-LAB_0800034e:
-    ldr        r0,PTR_gVBlankFrameCounter_0800052c
+1:
+    ldr        r0,PTR_gVBlankFrameCounter
     ldr        r2,[r0,#0x0]
-    ldr        r1,PTR_gFrameWaitValue_08000530
+    ldr        r1,PTR_gFrameWaitValue_0
     ldr        r1,[r1,#0x0]
     cmp        r2,r1
-    blt        LAB_0800034e
+    blt        1b
     mov        r1,#0x0
     str        r1,[r0,#0x0]
     pop        {pc}
 
 
+@@ Reads input from the controls.
 _ts Main_ReadInput
-    mov        r7,r10
-    ldr        r0,[r7,#0x4]
+    LoadMain input, r0, r7
     ldrb       r7,[r0,#0x13]
     add        r7,#0x1
     cmp        r7,#0x3
@@ -145,7 +146,7 @@ _ts Main_ReadInput
     mov        r7,#0x0
 LAB_0800036e:
     strb       r7,[r0,#0x13]
-    ldr        r4,PTR_REG_KEYINPUT_08000534
+    ldr        r4,PTR_REG_KEYINPUT
     ldrh       r4,[r4,#0x0]
     mvn        r4,r4
     ldrh       r5,[r0,#0x0]
@@ -194,6 +195,7 @@ LAB_080003b2:
     mov        pc,lr
 
 
+@@ Performs a soft reset check based on some conditions.
 _ts Main_SoftResetCheck
     push       {lr}
     bl         Fade_IsFadeActive
@@ -225,24 +227,26 @@ LAB_080003fe:
     strb       r4,[r1,#0x0]
 LAB_08000400:
     pop        {pc}
-    .byte 0x00
-    .byte 0x00
-    .word PTR_DAT_08000408
 
-PTR_DAT_08000408:
+    .align 2, 0
+
+    .word .+4
     .word 0x200d570
 
 
+@@ Initializes the main state used by the game, as well as other subsystems.
+@@ Forces a blank so all vram can be accessed immediately.
 _ts Main_Init
     mov        r0,#0x1
     b          LAB_08000412
 
 
+@@ Initializes the main state used by the game, as well as other subsystems.
 _ts Main_InitFromReset
     mov        r0,#0x0
 LAB_08000412:
     push       {lr}
-    ldr        r7,PTR_MainState_08000498
+    ldr        r7,PTR_MainState
     mov        r10,r7
     mov        r1,#0x40
     tst        r0,r0
@@ -278,7 +282,7 @@ LAB_08000420:
     bl         Sio_SetReady
     pop        {r0}
     mov        r10,r0
-    ldr        r0,PTR_gFrameWaitValue_08000538
+    ldr        r0,PTR_gFrameWaitValue_1
     mov        r1,#0x1
     strh       r1,[r0,#0x0]
     mov        r7,r10
@@ -287,7 +291,7 @@ LAB_08000420:
     bl         memset0_32
     pop        {pc}
 
-PTR_MainState_08000498:
+PTR_MainState:
     .word MainState
 
 MainState:
@@ -298,36 +302,37 @@ MainState:
     .word gDisplaySettings
     .word gCamera
     .word gFadeSettings
-    .word 0x20067d0
-    .word 0x2009bf0
-    .word 0x2006350
+    .word gBattleUi
+    .word gPlayerBattleState
+    .word gMapEventState
     .word gScene
-    .word 0x2006880
-    .word 0x2006140
+    .word gMapChange
+    .word gTransition
     .word gMainMenu
     .word gWindowSettings
     .word gBlendSettings
-    .word 0x2009a88
+    .word gDemo
     .word gBgDataManager
     .word gTextHandler
     .word 0x2007f20
     .word gFrameCounter
-    .word 0x200a180
+    .word gScreenDim
     .word gBgAnimationTaskList
     .word gScreens
-    .word 0x2009a70
+    .word gPetStatusControl
     .word gTintList
     .word gTextUi
-    .word 0x200d580
+    .word gStartMenu
     .word 0
-    .word 0x2007ea0
+    .word gMenu
     .word gGameStats
     .word 0x2009490
 
 
+@@ Wait for vblank to finish.
 _ts Main_WaitForVBlank
     push       {lr}
-    ldr        r0,PTR_REG_DISPSTAT_0800053c
+    ldr        r0,PTR_REG_DISPSTAT
     mov        r2,#0x1
 LAB_08000522:
     ldrh       r1,[r0,#0x0]
@@ -337,18 +342,8 @@ LAB_08000522:
 
     .align 2, 0
 
-
-PTR_gVBlankFrameCounter_0800052c:
-    .word gVBlankFrameCounter
-
-PTR_gFrameWaitValue_08000530:
-    .word gFrameWaitValue
-
-PTR_REG_KEYINPUT_08000534:
-    .word REG_KEYINPUT
-
-PTR_gFrameWaitValue_08000538:
-    .word gFrameWaitValue
-
-PTR_REG_DISPSTAT_0800053c:
-    .word REG_DISPSTAT
+PTR_gVBlankFrameCounter:    .word gVBlankFrameCounter
+PTR_gFrameWaitValue_0:      .word gFrameWaitValue
+PTR_REG_KEYINPUT:           .word REG_KEYINPUT
+PTR_gFrameWaitValue_1:      .word gFrameWaitValue
+PTR_REG_DISPSTAT:           .word REG_DISPSTAT
