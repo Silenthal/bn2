@@ -15,15 +15,16 @@
 @ Start: 0x540
 
 
+@@ Initializes audio.
 _ts Sound_Init
     push       {lr}
     bl         m4aSoundInit
-    ldr        r0,DAT_08000568
+    ldr        r0,PTR_soundMode
     bl         m4aSoundMode
-    ldr        r0,PTR_interruptVector_08000570
-    ldr        r1,PTR_IRQ_VCount_08000574
+    ldr        r0,PTR_interruptHandler
+    ldr        r1,PTR_handlerVcount
     str        r1,[r0,#0x8]
-    ldr        r0,PTR_REG_DISPSTAT_0800056c
+    ldr        r0,PTR_REG_DISPSTAT
     ldrh       r1,[r0,#0x0]
     mov        r2,#0xff
     and        r1,r2
@@ -35,41 +36,38 @@ _ts Sound_Init
     strh       r1,[r0,#0x0]
     pop        {pc}
 
-DAT_08000568:
-    .word 0x93040D
+    .align 2, 0
 
-PTR_REG_DISPSTAT_0800056c:
-    .word REG_DISPSTAT
-
-PTR_interruptVector_08000570:
-    .word interruptVector
-
-PTR_IRQ_VCount_08000574:
-    .word IRQ_VCount
+PTR_soundMode:          .word 0x93040D
+PTR_REG_DISPSTAT:       .word REG_DISPSTAT
+PTR_interruptHandler:   .word interruptVector
+PTR_handlerVcount:      .word IRQ_VCount
 
 
+@@ Sound function during vcount that handles general audio.
 _ts Sound_Main
     push       {lr}
     bl         m4aSoundMain
     pop        {pc}
-    .word 0x2003a80
-    .word DAT_08000588
-
-DAT_08000588:
-    .byte 0x1C
-    .byte 0x12
-    .asciz "%D"
 
     .align 2, 0
 
+    .word 0x2003a80
+    .word DAT_08000588
+DAT_08000588:
+    debug_str 0x1C, 0x12, "%D"
 
 
+@@ Sound function during vsync that transfers audio data.
 _ts Sound_VSync
     push       {lr}
     bl         m4aSoundVSync
     pop        {pc}
 
 
+@@ Play a sound effect immediately.
+@@ In:
+@@ r0: songid - The ID of the sound to play.
 _ts Sound_PlaySongImmediate
     push       {r1,r2,r3,r4,r5,r6,r7,lr}
 LAB_0800059a:
@@ -82,6 +80,9 @@ LAB_080005a6:
     pop        {r1,r2,r3,r4,r5,r6,r7,pc}
 
 
+@@ Plays background music.
+@@ In:
+@@ r0: songid - The ID of the track to play.
 _ts Sound_ChangeSong
     push       {r1,r2,r3,r4,r5,r6,r7,lr}
     mov        r7,r10
@@ -93,6 +94,9 @@ _ts Sound_ChangeSong
     b          LAB_0800059a
 
 
+@@ Plays background music without checking what's playing.
+@@ In:
+@@ r0: songid - The ID of the track to play.
 _ts Sound_PlaySong
     push       {r1,r2,r3,r4,r5,r6,r7,lr}
     mov        r7,r10
@@ -101,9 +105,13 @@ _ts Sound_PlaySong
     b          LAB_0800059a
 
 
+@@ Fades out the specified music track.
+@@ In:
+@@ r0: musicPlayerId - The index of the music player to fade.
+@@ r1: speed - The speed at which to fade.
 _nt Song_FadeOut
     push       {r5,lr}
-    ldr        r7,DAT_080005d8
+    ldr        r7,PTR_musicPlayerList
     lsl        r0,r0,#0x2
     ldr        r0,[r7,r0]
     mov        r2,r10
@@ -113,8 +121,10 @@ _nt Song_FadeOut
     mov        r10,r2
     pop        {r5,pc}
 
-DAT_080005d8:
-    .word 0x80005DC
+    .align 2, 0
+
+PTR_musicPlayerList:
+    .word musicPlayerList
 
 musicPlayerList:
     .word musicPlayerInfo_00
@@ -151,6 +161,7 @@ musicPlayerList:
     .word musicPlayerInfo_1F
 
 
+@@ Stops all playing music.
 _ts Sound_StopAllMusic
     push       {lr}
     mov        r1,r10
@@ -165,6 +176,7 @@ _ts Sound_StopAllMusic
     pop        {pc}
 
 
+@@ Changes the currently playing BGM based on the current area.
 _ts Sound_AreaSongChange
     push       {lr}
     mov        r7,r10
@@ -789,7 +801,7 @@ PTR_SongId_08000954:
     .word SongId_08000980
     .word SongId_08000984
     .word SongId_08000988
-    .word 0x800098D
+    .word SongId_0800098d
 
 PTR_SongId_08000968:
     .word SongId_08000992
@@ -863,7 +875,9 @@ SongId_080009a2:
     .align 2, 0
 
 
-
+@@ Stops the specified song.
+@@ In:
+@@ r0: songid - The ID of the track to stop.
 _ts Sound_StopSong
     push       {r1,r2,r3,r4,r5,r6,r7,lr}
     mov        r1,r10

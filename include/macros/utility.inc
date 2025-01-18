@@ -103,3 +103,38 @@
     .macro cam_end
     .short 8
     .endm
+
+    .macro player_anim animId, dx, dy, time
+    .byte \animId
+    .byte \dx
+    .byte \dy
+    .byte \time
+    .endm
+
+    .macro tutorial_battle spawn, folder, type, shuffle
+    .word \spawn
+    .word \type
+    .word \folder
+    .byte \shuffle
+    .byte 0, 0, 0
+    .endm
+
+    .macro fixed_battle spawn, bg, type, dir, x, y, z, canEscape=True
+    .word \spawn
+    .word 0
+    .byte \bg
+    .byte \type
+    .byte 0
+    .byte \dir
+    .word \x
+    .word \y
+    .word \z
+    .byte \canEscape
+    .byte -1, -1, -1
+    .endm
+
+    .macro debug_str x, y, str
+    .byte \x
+    .byte \y
+    .asciz "\str"
+    .endm
