@@ -25,12 +25,15 @@ SECTIONS {
 	. = __ewram_start;
 	ewram (NOLOAD) :
 	{
+		gChipFolders				= 0xAB0;
 		gBitsetNpc					= 0xC18;
+		gStylePoints				= 0xDA0;
 		gWorld						= 0xDC0;
 		gGameStats					= 0x1120;
 		gBattleChipInventory		= 0x11B0;
 		gEntityListNpc				= 0x2D80;
 		gInventoryChecksumIndex		= 0x3A40;
+		gStyleJudge					= 0x3A50;
 		gPrintBufferStart			= 0x3A88;
 		gPrintBufferEnd				= 0x3E88;
 		gStartMenuState				= 0x4C50;
@@ -38,6 +41,7 @@ SECTIONS {
 		gEntityBoundsList			= 0x4C60;
 		gBattle						= 0x4EE0;
 		textTileBuffer				= 0x4F90;
+		gBattleDeck					= 0x5EC0;
 		tempBg1Hofs					= 0x5F30;
 		gSpriteTilesetDetailCount	= 0x5F54;
 		gBgAnimationTaskList		= 0x5F60;
@@ -47,11 +51,14 @@ SECTIONS {
 		gFillValue					= 0x6250;
 		gBlendSettings				= 0x6260;
 		gBitsetEffect				= 0x6268;
+		gBattleSpriteCount			= 0x626C;
 		gTintList					= 0x6270;
 		gFrameWaitValue				= 0x6348;
 		gMapEventState				= 0x6350;
 		gCamera						= 0x6370;
 		gIsObjectXFlipped			= 0x63B8;
+		gObjPaletteBuffer0			= 0x63C0;
+		gObjPalette0				= 0x65C0;
 		gBattleUi					= 0x67D0;
 		gSpriteAffineDataFlag		= 0x6870;
 		gMapChange					= 0x6880;
@@ -112,7 +119,7 @@ SECTIONS {
 		gPetStatusControl			= 0x9A70;
 		gEntityBoundsListCount		= 0x9A80;
 		gDemo						= 0x9A88;
-		eDmaTransferQueueSize		= 0x9A84;
+		gDmaParamListSize			= 0x9A84;
 		gDisplaySettings			= 0x9AF0;
 		gChipTrader					= 0x9B10;
 		gPlayerAnimation			= 0x9B60;
@@ -122,19 +129,39 @@ SECTIONS {
 		gOamFreeObjectCount			= 0xA170;
 		gScreenDim					= 0xA180;
 		gLayoutDialogueText			= 0xA1B0;
-		eDmaParamList				= 0xA3B0;
+		gDmaParamList				= 0xA3B0;
 		gEntityListAttack			= 0xA9B0;
 		gCurMapEventData			= 0xC1B0;
 		gCurMapCoverData			= 0xC1D0;
 		gBgDataManager				= 0xC1F0;
 		gSpriteLzDetails			= 0xC220;
+		gMpBattleChipInventory		= 0xC260;
 		gStartMenu					= 0xD580;
 		gBgTileDataBuffer0			= 0xD5C0;
+		gBgTileDataBuffer8			= 0xD680;
+		gBgTileDataBuffer1			= 0xD6E0;
+		gBgTileDataBuffer9			= 0xD7C0;
+		gBgTileDataBuffer2			= 0xD800;
+		gBgTileDataBuffer7			= 0xD8C0;
+		gBgTileDataBuffer3			= 0xD920;
+		gBgTileDataBufferA			= 0xD9C0;
+		gBgTileDataBuffer4			= 0xDA40;
+		gBgTileDataBuffer5			= 0xDB20;
+		gBgTileDataBufferD			= 0xDC60;
+		gBgTileDataBufferB			= 0xDCC0;
+		gBgTileDataBuffer6			= 0xDD40;
+		gBgTileDataBufferC			= 0xE3C0;
 		gSpritePalettesLoaded		= 0xE9C0;
 		gGameOver					= 0xE9C8;
 		gSpriteTilesetOffset0		= 0xE9D0;
 		tempBg1Vofs					= 0xEA40;
 		gWindowSettings				= 0xEA70;
+		gBattleKeyStates			= 0xEA80;
+		gCustomScreen				= 0xEEF0;
+		gEnemyHp					= 0xEFD0;
+		gFixedEncounter				= 0xEFE8;
+		gBattleResult				= 0xEFF0;
+		gStyleChange				= 0xF010;
 		gCurPlayerPos				= 0xF020;
 		gNpcTalkState				= 0xF0B0;
 		musicPlayerInfo_13			= 0xF0C0;
@@ -176,6 +203,7 @@ SECTIONS {
 	{
 		gScreens					= 0x0;
 		interruptVector				= 0x2000;
+		interruptVectorHblank		= 0x2004;
 		gOamAttributeList			= 0x2440;
 		gSpriteContainerList		= 0x4880;
 		gMPlayJumpTable				= 0x5B80;

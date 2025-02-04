@@ -2,4 +2,10 @@
 utility                     0xAD4
 rng                         0x1478
 video                       0x14C0
+screen                      0x1774
+bg_update                   0x1890
+bg_task                     0x19A8
+interrupt_handler           0x1E5800
+screen_far                  0x1E597C
+tint_far                    0x1E5A64
 asset_pet                   0x7276D0

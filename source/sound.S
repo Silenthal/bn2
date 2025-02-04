@@ -68,7 +68,7 @@ _ts Sound_VSync
 @@ Play a sound effect immediately.
 @@ In:
 @@ r0: songid - The ID of the sound to play.
-_ts Sound_PlaySongImmediate
+_ts Sound_PlaySE
     push       {r1,r2,r3,r4,r5,r6,r7,lr}
 LAB_0800059a:
     mov        r1,r10
@@ -83,7 +83,7 @@ LAB_080005a6:
 @@ Plays background music.
 @@ In:
 @@ r0: songid - The ID of the track to play.
-_ts Sound_ChangeSong
+_ts Sound_PlayBGM
     push       {r1,r2,r3,r4,r5,r6,r7,lr}
     mov        r7,r10
     ldr        r7,[r7,#0x8]
@@ -97,7 +97,7 @@ _ts Sound_ChangeSong
 @@ Plays background music without checking what's playing.
 @@ In:
 @@ r0: songid - The ID of the track to play.
-_ts Sound_PlaySong
+_ts Sound_ForcePlayBGM
     push       {r1,r2,r3,r4,r5,r6,r7,lr}
     mov        r7,r10
     ldr        r7,[r7,#0x8]
@@ -109,7 +109,7 @@ _ts Sound_PlaySong
 @@ In:
 @@ r0: musicPlayerId - The index of the music player to fade.
 @@ r1: speed - The speed at which to fade.
-_nt Song_FadeOut
+_nt Sound_FadeOut
     push       {r5,lr}
     ldr        r7,PTR_musicPlayerList
     lsl        r0,r0,#0x2
@@ -239,7 +239,7 @@ LAB_080006da:
 LAB_080006e2:
     cmp        r0,#0xff
     beq        LAB_080006ec
-    bl         Sound_ChangeSong
+    bl         Sound_PlayBGM
     b          LAB_080006ec
 LAB_080006ec:
     pop        {pc}
